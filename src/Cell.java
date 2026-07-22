@@ -26,6 +26,11 @@ public class Cell {
         }
     }
 
+    void flag() {
+        // method to toggle the flagged state of the cell
+        this.isFlagged = !this.isFlagged;
+    }
+
     // this method is used to initialize the cell's state when the grid is created
     void setAlive(boolean alive) {
         this.isAlive = alive;

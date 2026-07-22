@@ -20,26 +20,36 @@ public class GameLogic {
             // get user input for cell coordinates
             grid.display(); // Display the current state of the grid
             System.out.print("Enter cell coordinates to reveal (x y): ");
+            System.out.print("Add the word 'flag' after the coordinates to flag a cell (e.g., '1 2 flag'): ");
             if (!scanner.hasNextInt()) {
-                System.out.println("No more input. Exiting game.");
-                break;
+                System.out.println("No more input. Try again.");
+                continue;
             }
             int x = scanner.nextInt();
             if (!scanner.hasNextInt()) {
-                System.out.println("Missing y coordinate. Exiting game.");
-                break;
+                System.out.println("Missing y coordinate. Try again.");
+                continue;
             }
             int y = scanner.nextInt();
+            boolean flag = false;
+            if (scanner.hasNext() && scanner.next().equalsIgnoreCase("flag")) {
+                flag = true;
+            }
 
-            // reveal the cell and check the result
-            int result = grid.revealCell(x, y);
-            if (result == -1) {
-                System.out.println("Game Over! You hit a bomb.");
-                break;
-            } else if (result == 1) {
-                System.out.println("You revealed an alive cell.");
+            if (flag) {
+                grid.flagCell(x, y);
+                System.out.println("You flagged the cell.");
             } else {
-                System.out.println("You revealed a dead cell.");
+                // reveal the cell and check the result
+                int result = grid.revealCell(x, y);
+                if (result == -1) {
+                    System.out.println("Game Over! You hit a bomb.");
+                    break;
+                } else if (result == 1) {
+                    System.out.println("You revealed an alive cell.");
+                } else {
+                    System.out.println("You revealed a dead cell.");
+                }
             }
         }
         scanner.close();

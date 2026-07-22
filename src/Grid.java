@@ -105,6 +105,16 @@ public class Grid {
         return 1;
     }
 
+    void flagCell(int x, int y) {
+        // method to flag the cell at the given coordinates
+        if (x < 0 || x >= gridCells.length || y < 0 || y >= gridCells[0].length) {
+            throw new IllegalArgumentException("Invalid cell coordinates");
+        }
+
+        Cell cell = gridCells[x][y];
+        cell.flag();
+    }
+
     void display() {
         // method to display the grid in the console
         int rows = gridCells.length;
