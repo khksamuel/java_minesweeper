@@ -1,12 +1,10 @@
 public class Cell {
-    public boolean isAlive;
     public boolean isBomb;
     public boolean isRevealed;
     public boolean isFlagged;
     public int neighbourBombs;
 
     Cell() {
-        this.isAlive = true;
         this.isBomb = false;
         this.neighbourBombs = 0;
         this.isRevealed = false;
@@ -15,25 +13,18 @@ public class Cell {
 
     int reveal() {
         // method to facilitate revealing the cell's state
-        // Returns -1 for bomb, 1 for alive, 0 for dead
+        // Returns -1 for bomb, 1 for safe cell
         // invalid cell coordinates should be handled in the grid class
         if (isBomb) {
             return -1; // Indicates a bomb
-        } else if (isAlive) {
-            return 1; // Indicates the cell is alive
-        } else {
-            return 0; // Indicates the cell is dead
         }
+
+        return 1; // Indicates a safe cell
     }
 
     void flag() {
         // method to toggle the flagged state of the cell
         this.isFlagged = !this.isFlagged;
-    }
-
-    // this method is used to initialize the cell's state when the grid is created
-    void setAlive(boolean alive) {
-        this.isAlive = alive;
     }
 
     // this method is used to initialize the cell's state when the grid is created
@@ -44,10 +35,6 @@ public class Cell {
     // this method is used to set the number of neighbouring bombs for the cell
     void setNeighbourBombs(int count) {
         this.neighbourBombs = count;
-    }
-
-    boolean isAlive() {
-        return this.isAlive;
     }
 
     boolean isBomb() {

@@ -39,7 +39,6 @@ public class Grid {
                 y = rand.nextInt(dimensions);
             }
             gridCells[x][y].setBomb(true);
-            gridCells[x][y].setAlive(false);
 
             // setting the neighbourBombs count for the neighbouring cells
             int[][] neighbourCoords = getNeighbourCoords(x, y);
