@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.Arrays;
 
 public class Grid {
     private Cell[][] gridCells;
@@ -63,7 +64,7 @@ public class Grid {
                 }
             }
         }
-        return coords;
+        return Arrays.copyOf(coords, index);
     }
 
     int revealCell(int x, int y) {
@@ -72,24 +73,82 @@ public class Grid {
             throw new IllegalArgumentException("Invalid cell coordinates");
         }
 
-        gridCells[x][y].isRevealed = true;
-        // Returns -1 for bomb, 1 for alive, 0 for dead
-        int result = gridCells[x][y].reveal();
-        if (result == 1 && gridCells[x][y].neighbourBombs == 0) {
-            // If the cell is alive and has no neighbouring bombs, reveal its neighbours
+        Cell cell = gridCells[x][y];
+
+        // Ignore repeated reveals and flagged cells.
+        if (cell.isRevealed || cell.isFlagged) {
+            return 2;
+        }
+
+        cell.isRevealed = true;
+
+        if (cell.isBomb) {
+            return -1;
+        }
+
+        // Count down once per newly revealed safe cell.
+        this.hiddenCellsCount--;
+
+        if (cell.neighbourBombs == 0) {
+            // If the cell is safe and has no neighbouring bombs, reveal neighbours
+            // recursively.
             int[][] neighbourCoords = getNeighbourCoords(x, y);
             for (int[] coord : neighbourCoords) {
                 int neighbourX = coord[0];
                 int neighbourY = coord[1];
-                if (!gridCells[neighbourX][neighbourY].isRevealed) {
-                    // recursively reveal the neighbouring cell (including its neighbours if it has
-                    // no neighbouring bombs)
+                if (!gridCells[neighbourX][neighbourY].isBomb) {
                     revealCell(neighbourX, neighbourY);
-                    this.hiddenCellsCount--;
                 }
             }
         }
-        this.hiddenCellsCount--;
-        return result;
+
+        return 1;
+    }
+
+    void display() {
+        // method to display the grid in the console
+        int rows = gridCells.length;
+        int cols = gridCells[0].length;
+        int rowLabelWidth = String.valueOf(rows - 1).length();
+        int colLabelWidth = String.valueOf(cols - 1).length();
+        int cellWidth = Math.max(1, colLabelWidth);
+
+        StringBuilder horizontalBar = new StringBuilder("+");
+        for (int i = 0; i < cols; i++) {
+            horizontalBar.append("-").append("-".repeat(cellWidth)).append("-+");
+        }
+
+        // Print column indices above the board.
+        StringBuilder colHeader = new StringBuilder(" ".repeat(rowLabelWidth + 2));
+        for (int j = 0; j < cols; j++) {
+            colHeader.append(" ").append(String.format("%" + cellWidth + "d", j)).append("  ");
+        }
+        System.out.println(colHeader);
+
+        for (int i = 0; i < rows; i++) {
+            System.out.println(" ".repeat(rowLabelWidth + 1) + horizontalBar);
+            StringBuilder row = new StringBuilder("|");
+
+            for (int j = 0; j < cols; j++) {
+                String symbol;
+                if (gridCells[i][j].isRevealed) {
+                    if (gridCells[i][j].isFlagged) {
+                        symbol = "🚩";
+                    } else if (gridCells[i][j].neighbourBombs > 0) {
+                        symbol = String.valueOf(gridCells[i][j].neighbourBombs);
+                    } else {
+                        // if the cell is revealed and has no neighbouring bombs, display ""
+                        symbol = " ";
+                    }
+                } else {
+                    // if the cell is not revealed, display "X"
+                    symbol = "X";
+                }
+
+                row.append(" ").append(String.format("%" + cellWidth + "s", symbol)).append(" |");
+            }
+            System.out.println(String.format("%" + rowLabelWidth + "d ", i) + row);
+        }
+        System.out.println(" ".repeat(rowLabelWidth + 1) + horizontalBar);
     }
 }
