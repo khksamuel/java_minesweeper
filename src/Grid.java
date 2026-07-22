@@ -2,6 +2,14 @@ import java.util.Random;
 import java.util.Arrays;
 
 public class Grid {
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_WHITE = "\u001B[37m";
+    // 256-color orange. Falls back to terminal default if unsupported.
+    private static final String ANSI_ORANGE = "\u001B[38;5;208m";
+
     private Cell[][] gridCells;
     public int hiddenCellsCount;
 
@@ -141,9 +149,11 @@ public class Grid {
 
             for (int j = 0; j < cols; j++) {
                 String symbol;
-                if (gridCells[i][j].isRevealed) {
-                    if (gridCells[i][j].isFlagged) {
-                        symbol = "🚩";
+                if (gridCells[i][j].isFlagged) {
+                    symbol = "F"; // Display "F" for flagged cells
+                } else if (gridCells[i][j].isRevealed) {
+                    if (gridCells[i][j].isBomb) {
+                        symbol = "*";
                     } else if (gridCells[i][j].neighbourBombs > 0) {
                         symbol = String.valueOf(gridCells[i][j].neighbourBombs);
                     } else {
@@ -155,10 +165,45 @@ public class Grid {
                     symbol = "X";
                 }
 
-                row.append(" ").append(String.format("%" + cellWidth + "s", symbol)).append(" |");
+                String paddedSymbol = String.format("%" + cellWidth + "s", symbol);
+                row.append(" ")
+                        .append(getColorForSymbol(symbol))
+                        .append(paddedSymbol)
+                        .append(ANSI_RESET)
+                        .append(" |");
             }
             System.out.println(String.format("%" + rowLabelWidth + "d ", i) + row);
         }
         System.out.println(" ".repeat(rowLabelWidth + 1) + horizontalBar);
+    }
+
+    private String getColorForSymbol(String symbol) {
+        if ("F".equals(symbol)) {
+            return ANSI_RED;
+        }
+        if ("*".equals(symbol)) {
+            return ANSI_RED;
+        }
+        if ("1".equals(symbol)) {
+            return ANSI_GREEN;
+        }
+        if ("2".equals(symbol)) {
+            return ANSI_YELLOW;
+        }
+        if ("X".equals(symbol)) {
+            return ANSI_WHITE;
+        }
+
+        // 3 or more revealed neighbouring bombs.
+        try {
+            int value = Integer.parseInt(symbol.trim());
+            if (value >= 3) {
+                return ANSI_ORANGE;
+            }
+        } catch (NumberFormatException ex) {
+            // Non-numeric symbols (such as blank) use default color.
+        }
+
+        return ANSI_RESET;
     }
 }
