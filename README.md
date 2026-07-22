@@ -6,11 +6,13 @@ Windows (PowerShell):
 
 - Build: `./build.ps1`
 - Run: `./run.ps1`
+- Test: `./test.ps1`
 
 macOS/Linux (POSIX shell):
 
 - Build: `sh ./build.sh`
 - Run: `sh ./run.sh`
+- Test: `sh ./test.sh`
 
 ## MVP
 
