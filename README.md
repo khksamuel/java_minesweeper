@@ -1,5 +1,17 @@
 # Project: Minesweeper
 
+## Build and Run
+
+Windows (PowerShell):
+
+- Build: `./build.ps1`
+- Run: `./run.ps1`
+
+macOS/Linux (POSIX shell):
+
+- Build: `sh ./build.sh`
+- Run: `sh ./run.sh`
+
 ## MVP
 
 Recreate a simplified version of the game Minesweeper to be played in the java console
