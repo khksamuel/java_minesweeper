@@ -177,6 +177,13 @@ public class Grid {
         System.out.println(" ".repeat(rowLabelWidth + 1) + horizontalBar);
     }
 
+    int getDisplayLineCount() {
+        int rows = gridCells.length;
+        // 1 column-header line + one horizontal bar per row + one row line per row +
+        // final bar.
+        return (2 * rows) + 2;
+    }
+
     private String getColorForSymbol(String symbol) {
         if ("F".equals(symbol)) {
             return ANSI_RED;

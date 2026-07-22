@@ -18,13 +18,22 @@ public class GameLogic {
     public void start(Grid grid, Scanner scanner) {
         // method to start the game
         String statusMessage = "Game started.";
+        boolean hasRenderedFrame = false;
+        int previousFrameLines = 0;
+
         while (grid.hiddenCellsCount > 0) {
-            // Redraw board in place to avoid endless terminal scrolling.
-            clearScreen();
+            // Redraw only the previous frame block to avoid terminal scrolling.
+            if (hasRenderedFrame) {
+                moveCursorUp(previousFrameLines);
+                clearFromCursorDown();
+            }
+
             grid.display();
             System.out.println(statusMessage);
             System.out.println("Enter: x y   or   x y flag");
             System.out.print("> ");
+            hasRenderedFrame = true;
+            previousFrameLines = grid.getDisplayLineCount() + 4;
 
             if (!scanner.hasNextLine()) {
                 statusMessage = "No more input. Exiting game.";
@@ -66,7 +75,10 @@ public class GameLogic {
                 } else {
                     int result = grid.revealCell(row, col);
                     if (result == -1) {
-                        clearScreen();
+                        if (hasRenderedFrame) {
+                            moveCursorUp(previousFrameLines);
+                            clearFromCursorDown();
+                        }
                         grid.display();
                         System.out.println("Game Over! You hit a bomb.");
                         scanner.close();
@@ -82,7 +94,10 @@ public class GameLogic {
             }
         }
 
-        clearScreen();
+        if (hasRenderedFrame) {
+            moveCursorUp(previousFrameLines);
+            clearFromCursorDown();
+        }
         grid.display();
         scanner.close();
         if (grid.hiddenCellsCount == 0) {
@@ -92,9 +107,14 @@ public class GameLogic {
         }
     }
 
-    private void clearScreen() {
-        // ANSI clear and cursor home keeps rendering inside a fixed terminal area.
-        System.out.print("\033[H\033[2J");
+    private void moveCursorUp(int lines) {
+        if (lines > 0) {
+            System.out.print("\033[" + lines + "A");
+        }
+    }
+
+    private void clearFromCursorDown() {
+        System.out.print("\033[J");
         System.out.flush();
     }
 }
