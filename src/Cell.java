@@ -13,13 +13,13 @@ public class Cell {
 
     int reveal() {
         // method to facilitate revealing the cell's state
-        // Returns -1 for bomb, 1 for safe cell
+        // Returns Grid.BOMB for bomb, Grid.SAFE for safe cell
         // invalid cell coordinates should be handled in the grid class
         if (isBomb) {
-            return -1; // Indicates a bomb
+            return Grid.BOMB; // Indicates a bomb
         }
 
-        return 1; // Indicates a safe cell
+        return Grid.SAFE; // Indicates a safe cell
     }
 
     void flag() {

@@ -64,7 +64,7 @@ public class GridTest {
 
         int result = grid.revealCell(1, 1);
 
-        assertEquals(-1, result);
+        assertEquals(Grid.BOMB, result);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class GridTest {
 
         int result = grid.revealCell(1, 1);
 
-        assertEquals(1, result);
+        assertEquals(Grid.SAFE, result);
         assertEquals(0, grid.hiddenCellsCount);
     }
 
@@ -82,11 +82,11 @@ public class GridTest {
         Grid grid = new Grid(3);
 
         grid.flagCell(1, 1);
-        assertEquals(2, grid.revealCell(1, 1));
+        assertEquals(Grid.ALREADY_HANDLED, grid.revealCell(1, 1));
 
         grid.flagCell(1, 1);
-        assertEquals(1, grid.revealCell(1, 1));
-        assertEquals(2, grid.revealCell(1, 1));
+        assertEquals(Grid.SAFE, grid.revealCell(1, 1));
+        assertEquals(Grid.ALREADY_HANDLED, grid.revealCell(1, 1));
     }
 
     @Test

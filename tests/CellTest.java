@@ -9,7 +9,7 @@ public class CellTest {
     void revealReturnsSafeCodeWhenCellIsNotBomb() {
         Cell cell = new Cell();
 
-        assertEquals(1, cell.reveal());
+        assertEquals(Grid.SAFE, cell.reveal());
     }
 
     @Test
@@ -17,7 +17,7 @@ public class CellTest {
         Cell cell = new Cell();
         cell.setBomb(true);
 
-        assertEquals(-1, cell.reveal());
+        assertEquals(Grid.BOMB, cell.reveal());
     }
 
     @Test

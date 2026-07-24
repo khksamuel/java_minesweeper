@@ -74,7 +74,7 @@ public class GameLogic {
                     statusMessage = "Flag updated at (" + x + ", " + y + ").";
                 } else {
                     int result = grid.revealCell(row, col);
-                    if (result == -1) {
+                    if (result == Grid.BOMB) {
                         if (hasRenderedFrame) {
                             moveCursorUp(previousFrameLines);
                             clearFromCursorDown();
@@ -83,7 +83,7 @@ public class GameLogic {
                         System.out.println("Game Over! You hit a bomb.");
                         scanner.close();
                         return;
-                    } else if (result == 1) {
+                    } else if (result == Grid.SAFE) {
                         statusMessage = "Revealed (" + x + ", " + y + ").";
                     } else {
                         statusMessage = "Cell already revealed or flagged.";

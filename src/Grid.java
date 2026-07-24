@@ -2,6 +2,11 @@ import java.util.Random;
 import java.util.Arrays;
 
 public class Grid {
+    // Reveal result codes
+    public static final int BOMB = -1;
+    public static final int SAFE = 1;
+    public static final int ALREADY_HANDLED = 2;
+
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_GREEN = "\u001B[32m";
@@ -84,13 +89,13 @@ public class Grid {
 
         // Ignore repeated reveals and flagged cells.
         if (cell.isRevealed || cell.isFlagged) {
-            return 2;
+            return ALREADY_HANDLED;
         }
 
         cell.isRevealed = true;
 
         if (cell.isBomb) {
-            return -1;
+            return BOMB;
         }
 
         // Count down once per newly revealed safe cell.
@@ -109,7 +114,7 @@ public class Grid {
             }
         }
 
-        return 1;
+        return SAFE;
     }
 
     void flagCell(int x, int y) {
