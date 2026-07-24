@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.Arrays;
 
-public class Grid {
+public class Grid implements GameBoard {
     // Reveal result codes
     public static final int BOMB = -1;
     public static final int SAFE = 1;
@@ -79,7 +79,8 @@ public class Grid {
         return Arrays.copyOf(coords, index);
     }
 
-    int revealCell(int x, int y) {
+    @Override
+    public int revealCell(int x, int y) {
         // method to reveal the cell at the given coordinates
         if (x < 0 || x >= gridCells.length || y < 0 || y >= gridCells[0].length) {
             throw new IllegalArgumentException("Invalid cell coordinates");
@@ -117,7 +118,8 @@ public class Grid {
         return SAFE;
     }
 
-    void flagCell(int x, int y) {
+    @Override
+    public void flagCell(int x, int y) {
         // method to flag the cell at the given coordinates
         if (x < 0 || x >= gridCells.length || y < 0 || y >= gridCells[0].length) {
             throw new IllegalArgumentException("Invalid cell coordinates");
@@ -127,7 +129,8 @@ public class Grid {
         cell.flag();
     }
 
-    void display() {
+    @Override
+    public void display() {
         // method to display the grid in the console
         int rows = gridCells.length;
         int cols = gridCells[0].length;
@@ -180,7 +183,8 @@ public class Grid {
         }
         System.out.println(" ".repeat(rowLabelWidth + 1) + horizontalBar);
     }
-
+@Override
+    public 
     int getDisplayLineCount() {
         int rows = gridCells.length;
         // 1 column-header line + one horizontal bar per row + one row line per row +
@@ -216,5 +220,10 @@ public class Grid {
         }
 
         return ANSI_RESET;
+    }
+
+    @Override
+    public boolean isWon() {
+        return hiddenCellsCount == 0;
     }
 }
