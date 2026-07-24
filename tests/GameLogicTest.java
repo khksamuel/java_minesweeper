@@ -16,7 +16,7 @@ public class GameLogicTest {
 
         assertTrue(input.isClosed(), "Input handler should be closed");
         assertTrue(renderer.getOutput().stream()
-                .anyMatch(s -> s.contains("No valid dimension provided")),
+                .anyMatch(s -> s.contains("positive integer")),
                 "Should display error message");
     }
 
@@ -104,6 +104,19 @@ public class GameLogicTest {
         assertTrue(renderer.getOutput().stream()
                 .anyMatch(s -> s.contains("PRINT") || s.contains("PROMPT")),
                 "Should provide output for incomplete input");
+    }
+
+    @Test
+    void invalidCommandWithExtraTextShowsErrorMessage() {
+        StubInputHandler input = new StubInputHandler("3", "consume me", "0 0 flag extra", "0 0");
+        StubRenderer renderer = new StubRenderer();
+        GameLogic gameLogic = new GameLogic(input, renderer);
+
+        gameLogic.initializeAndStart();
+
+        assertTrue(renderer.getOutput().stream()
+                .anyMatch(s -> s.contains("Invalid command")),
+                "Should reject commands with unexpected extra text");
     }
 
     @Test

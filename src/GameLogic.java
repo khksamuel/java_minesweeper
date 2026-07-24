@@ -3,11 +3,12 @@ public class GameLogic {
     private final Renderer renderer;
 
     private static final String DIMENSION_PROMPT = "Enter grid dimensions: ";
-    private static final String INVALID_DIMENSION_MESSAGE = "No valid dimension provided. Exiting game.";
+    private static final String INVALID_DIMENSION_MESSAGE = "Please enter a positive integer for dimensions.";
     private static final String GAME_STARTED_MESSAGE = "Game started.";
     private static final String NO_MORE_INPUT_MESSAGE = "No more input. Exiting game.";
     private static final String EMPTY_INPUT_MESSAGE = "Please enter coordinates like: 1 2 or 1 2 flag";
     private static final String MISSING_COORDINATES_MESSAGE = "Missing coordinates. Use: x y or x y flag";
+    private static final String INVALID_COMMAND_MESSAGE = "Invalid command. Use: x y or x y flag";
     private static final String INVALID_COORDINATES_MESSAGE = "Coordinates must be numbers. Use: x y";
     private static final String COMMAND_HINT = "Enter: x y   or   x y flag";
     private static final String FLAG_STATUS_PREFIX = "Flag updated at (";
@@ -26,14 +27,30 @@ public class GameLogic {
      * Initialize the game: read dimensions, create board, and start playing.
      */
     public void initializeAndStart() {
-        renderer.print(DIMENSION_PROMPT);
-        if (!inputHandler.hasNextInt()) {
-            renderer.print(INVALID_DIMENSION_MESSAGE);
-            inputHandler.close();
-            return;
-        }
-        int dimensions = inputHandler.nextInt();
-        inputHandler.nextLine(); // Consume trailing newline so first command prompt reads real input.
+        int dimensions = -1;
+        do {
+            renderer.print(DIMENSION_PROMPT);
+            if (!inputHandler.hasNextInt()) {
+                renderer.print(INVALID_DIMENSION_MESSAGE);
+                if (!inputHandler.hasNext()) {
+                    inputHandler.close();
+                    return;
+                }
+                inputHandler.nextLine(); // Consume the invalid input
+                continue;
+            }
+            dimensions = inputHandler.nextInt();
+            if (dimensions <= 0) {
+                renderer.print(INVALID_DIMENSION_MESSAGE);
+                if (!inputHandler.hasNext()) {
+                    inputHandler.close();
+                    return;
+                }
+                inputHandler.nextLine(); // Consume the invalid input
+                continue;
+            }
+            inputHandler.nextLine(); // Consume trailing newline
+        } while (dimensions <= 0);
 
         // Create the board and game
         GameBoard board = new Grid(dimensions);
@@ -75,6 +92,10 @@ public class GameLogic {
                 statusMessage = MISSING_COORDINATES_MESSAGE;
                 continue;
             }
+            if (parts.length > 3) {
+                statusMessage = INVALID_COMMAND_MESSAGE;
+                continue;
+            }
 
             int x;
             int y;
@@ -90,7 +111,11 @@ public class GameLogic {
             int row = y;
             int col = x;
 
-            boolean flag = parts.length >= 3 && parts[2].equalsIgnoreCase("flag");
+            boolean flag = parts.length == 3;
+            if (flag && !parts[2].equalsIgnoreCase("flag")) {
+                statusMessage = INVALID_COMMAND_MESSAGE;
+                continue;
+            }
 
             try {
                 if (flag) {
