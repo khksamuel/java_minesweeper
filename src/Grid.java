@@ -183,9 +183,9 @@ public class Grid implements GameBoard {
         }
         System.out.println(" ".repeat(rowLabelWidth + 1) + horizontalBar);
     }
-@Override
-    public 
-    int getDisplayLineCount() {
+
+    @Override
+    public int getDisplayLineCount() {
         int rows = gridCells.length;
         // 1 column-header line + one horizontal bar per row + one row line per row +
         // final bar.
