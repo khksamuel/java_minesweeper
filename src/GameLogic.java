@@ -99,6 +99,7 @@ public class GameLogic {
                 } else {
                     int result = game.reveal(row, col);
                     if (result == Grid.BOMB) {
+                        board.revealAllCells();
                         clearPreviousFrameIfNeeded(hasRenderedFrame, previousFrameLines);
                         renderer.displayBoard(board);
                         renderer.print(BOMB_MESSAGE);

@@ -233,4 +233,13 @@ public class Grid implements GameBoard {
     public boolean isWon() {
         return hiddenCellsCount == 0;
     }
+
+    @Override
+    public void revealAllCells() {
+        for (int i = 0; i < gridCells.length; i++) {
+            for (int j = 0; j < gridCells[i].length; j++) {
+                gridCells[i][j].isRevealed = true;
+            }
+        }
+    }
 }

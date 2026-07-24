@@ -12,6 +12,11 @@ public interface GameBoard {
     // Display the board to the output.
     void display();
 
+    // Reveal every cell on the board.
+    default void revealAllCells() {
+        // Optional for implementations that want to support post-loss reveal.
+    }
+
     // Check if the player has won (all non-bomb cells revealed).
     boolean isWon();
 
