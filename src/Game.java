@@ -11,6 +11,7 @@ public class Game {
 
     /**
      * Reveal the cell at the given coordinates.
+     * 
      * @return the result code (BOMB, SAFE, or ALREADY_HANDLED)
      */
     public int reveal(int row, int col) {
