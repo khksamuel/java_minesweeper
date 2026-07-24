@@ -44,14 +44,21 @@ public class Grid implements GameBoard {
                 y = rand.nextInt(dimensions);
             }
             gridCells[x][y].setBomb(true);
+        }
 
-            // setting the neighbourBombs count for the neighbouring cells
-            int[][] neighbourCoords = getNeighbourCoords(x, y);
-            for (int[] coord : neighbourCoords) {
-                int neighbourX = coord[0];
-                int neighbourY = coord[1];
-                gridCells[neighbourX][neighbourY]
-                        .setNeighbourBombs(gridCells[neighbourX][neighbourY].neighbourBombs + 1);
+        // Set neighbor bomb counts for all cells
+        for (int i = 0; i < gridCells.length; i++) {
+            for (int j = 0; j < gridCells[0].length; j++) {
+                if (!gridCells[i][j].isBomb) {
+                    int count = 0;
+                    int[][] neighbourCoords = getNeighbourCoords(i, j);
+                    for (int[] coord : neighbourCoords) {
+                        if (gridCells[coord[0]][coord[1]].isBomb) {
+                            count++;
+                        }
+                    }
+                    gridCells[i][j].setNeighbourBombs(count);
+                }
             }
         }
         this.hiddenCellsCount = dimensions * dimensions - bombCount;
