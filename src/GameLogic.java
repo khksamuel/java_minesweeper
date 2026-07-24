@@ -2,6 +2,21 @@ public class GameLogic {
     private final InputHandler inputHandler;
     private final Renderer renderer;
 
+    private static final String DIMENSION_PROMPT = "Enter grid dimensions: ";
+    private static final String INVALID_DIMENSION_MESSAGE = "No valid dimension provided. Exiting game.";
+    private static final String GAME_STARTED_MESSAGE = "Game started.";
+    private static final String NO_MORE_INPUT_MESSAGE = "No more input. Exiting game.";
+    private static final String EMPTY_INPUT_MESSAGE = "Please enter coordinates like: 1 2 or 1 2 flag";
+    private static final String MISSING_COORDINATES_MESSAGE = "Missing coordinates. Use: x y or x y flag";
+    private static final String INVALID_COORDINATES_MESSAGE = "Coordinates must be numbers. Use: x y";
+    private static final String COMMAND_HINT = "Enter: x y   or   x y flag";
+    private static final String FLAG_STATUS_PREFIX = "Flag updated at (";
+    private static final String REVEAL_STATUS_PREFIX = "Revealed (";
+    private static final String CELL_HANDLED_MESSAGE = "Cell already revealed or flagged.";
+    private static final String BOMB_MESSAGE = "Game Over! You hit a bomb.";
+    private static final String WIN_MESSAGE = "Congratulations! You won!";
+    private static final String END_MESSAGE = "Game ended.";
+
     public GameLogic(InputHandler inputHandler, Renderer renderer) {
         this.inputHandler = inputHandler;
         this.renderer = renderer;
@@ -11,10 +26,9 @@ public class GameLogic {
      * Initialize the game: read dimensions, create board, and start playing.
      */
     public void initializeAndStart() {
-        // Prompt for grid dimensions
-        renderer.print("Enter grid dimensions: ");
+        renderer.print(DIMENSION_PROMPT);
         if (!inputHandler.hasNextInt()) {
-            renderer.print("No valid dimension provided. Exiting game.");
+            renderer.print(INVALID_DIMENSION_MESSAGE);
             inputHandler.close();
             return;
         }
@@ -31,38 +45,34 @@ public class GameLogic {
 
     private void start(Game game) {
         GameBoard board = game.getBoard();
-        String statusMessage = "Game started.";
+        String statusMessage = GAME_STARTED_MESSAGE;
         boolean hasRenderedFrame = false;
         int previousFrameLines = 0;
 
         while (!game.isGameOver()) {
-            // Redraw only the previous frame block to avoid terminal scrolling.
-            if (hasRenderedFrame) {
-                renderer.moveCursorUp(previousFrameLines);
-                renderer.clearFromCursorDown();
-            }
+            clearPreviousFrameIfNeeded(hasRenderedFrame, previousFrameLines);
 
             renderer.displayBoard(board);
             renderer.print(statusMessage);
-            renderer.print("Enter: x y   or   x y flag");
+            renderer.print(COMMAND_HINT);
             renderer.printPrompt("> ");
             hasRenderedFrame = true;
             previousFrameLines = board.getDisplayLineCount() + 4;
 
             if (!inputHandler.hasNext()) {
-                statusMessage = "No more input. Exiting game.";
+                statusMessage = NO_MORE_INPUT_MESSAGE;
                 break;
             }
 
             String input = inputHandler.readLine().trim();
             if (input.isEmpty()) {
-                statusMessage = "Please enter coordinates like: 1 2 or 1 2 flag";
+                statusMessage = EMPTY_INPUT_MESSAGE;
                 continue;
             }
 
             String[] parts = input.split("\\s+");
             if (parts.length < 2) {
-                statusMessage = "Missing coordinates. Use: x y or x y flag";
+                statusMessage = MISSING_COORDINATES_MESSAGE;
                 continue;
             }
 
@@ -72,7 +82,7 @@ public class GameLogic {
                 x = Integer.parseInt(parts[0]);
                 y = Integer.parseInt(parts[1]);
             } catch (NumberFormatException ex) {
-                statusMessage = "Coordinates must be numbers. Use: x y";
+                statusMessage = INVALID_COORDINATES_MESSAGE;
                 continue;
             }
 
@@ -85,22 +95,19 @@ public class GameLogic {
             try {
                 if (flag) {
                     game.flag(row, col);
-                    statusMessage = "Flag updated at (" + x + ", " + y + ").";
+                    statusMessage = FLAG_STATUS_PREFIX + x + ", " + y + ").";
                 } else {
                     int result = game.reveal(row, col);
                     if (result == Grid.BOMB) {
-                        if (hasRenderedFrame) {
-                            renderer.moveCursorUp(previousFrameLines);
-                            renderer.clearFromCursorDown();
-                        }
+                        clearPreviousFrameIfNeeded(hasRenderedFrame, previousFrameLines);
                         renderer.displayBoard(board);
-                        renderer.print("Game Over! You hit a bomb.");
+                        renderer.print(BOMB_MESSAGE);
                         inputHandler.close();
                         return;
                     } else if (result == Grid.SAFE) {
-                        statusMessage = "Revealed (" + x + ", " + y + ").";
+                        statusMessage = REVEAL_STATUS_PREFIX + x + ", " + y + ").";
                     } else {
-                        statusMessage = "Cell already revealed or flagged.";
+                        statusMessage = CELL_HANDLED_MESSAGE;
                     }
                 }
             } catch (IllegalArgumentException ex) {
@@ -109,15 +116,22 @@ public class GameLogic {
         }
 
         if (hasRenderedFrame) {
-            renderer.moveCursorUp(previousFrameLines);
-            renderer.clearFromCursorDown();
+            clearPreviousFrameIfNeeded(true, previousFrameLines);
         }
         renderer.displayBoard(board);
         inputHandler.close();
         if (game.isWon()) {
-            renderer.print("Congratulations! You won!");
+            renderer.print(WIN_MESSAGE);
         } else {
-            renderer.print("Game ended.");
+            renderer.print(END_MESSAGE);
+        }
+    }
+
+    private void clearPreviousFrameIfNeeded(boolean hasRenderedFrame, int previousFrameLines) {
+        // Keep the console output stable by redrawing over the prior frame block only.
+        if (hasRenderedFrame) {
+            renderer.moveCursorUp(previousFrameLines);
+            renderer.clearFromCursorDown();
         }
     }
 }

@@ -53,7 +53,8 @@ if ($testFiles.Count -eq 0) {
 }
 
 $compileCp = "$junitJar;$binDir"
-& javac -cp $compileCp -d $testBinDir @testFiles
+$allCompileFiles = @($sourceFiles + $testFiles)
+& javac -cp $compileCp -d $testBinDir @allCompileFiles
 if ($LASTEXITCODE -ne 0) {
     throw "javac failed while compiling test files."
 }
