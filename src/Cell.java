@@ -1,8 +1,8 @@
 public class Cell {
-    public boolean isBomb;
-    public boolean isRevealed;
-    public boolean isFlagged;
-    public int neighbourBombs;
+    boolean isBomb;
+    boolean isRevealed;
+    boolean isFlagged;
+    int neighbourBombs;
 
     Cell() {
         this.isBomb = false;

@@ -16,7 +16,7 @@ public class Grid implements GameBoard {
     private static final String ANSI_ORANGE = "\u001B[38;5;208m";
 
     private Cell[][] gridCells;
-    public int hiddenCellsCount;
+    int hiddenCellsCount;
 
     Grid(int dimensions) {
         // constructor to initialize the grid with the specified dimensions (assuming a
